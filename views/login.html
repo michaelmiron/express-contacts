@@ -41,8 +41,9 @@
         const result = await response.json();
 
         if (response.ok) {
-          alert("Login successful! Token: " + result.accessToken);
-          // Optionally, redirect to a dashboard or save the token
+          localStorage.setItem("token", result.accessToken);
+
+          window.location.href = "menu.html";
         } else {
           alert("Error: " + result.message);
         }
