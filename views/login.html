@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+  <body>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Email:</label>
+      <input type="text" name="email" required /><br /><br />
+
+      <label>Password:</label>
+      <input type="password" name="password" required /><br /><br />
+
+      <button type="submit">Login</button>
+    </form>
+    <p>
+      Don't have an account?
+      <a href="registration-page.html">Register here</a>
+    </p>
+
+    <script>
+      const form = document.getElementById("loginForm");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        const data = {
+          email: formData.get("email"),
+          password: formData.get("password"),
+        };
+
+        const response = await fetch("/api/users/loginUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Login successful! Token: " + result.accessToken);
+          // Optionally, redirect to a dashboard or save the token
+        } else {
+          alert("Error: " + result.message);
+        }
+      });
+    </script>
+  </body>
+</html>
