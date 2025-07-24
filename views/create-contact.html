@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Contact</title>
+</head>
+<body>
+    <h2>You can create a contact!</h2>
+    <form id="createContactForm">
+      <label>Name:</label>
+      <input type="text" name="name" required /><br /><br />
+
+      <label>Email:</label>
+      <input type="text" name="email" required /><br /><br />
+
+      <label>Phone:</label>
+      <input type="text" name="phone" required /><br /><br />
+
+      <button type="submit">Create</button>
+    </form>
+
+    <script>
+        const form = document.getElementById("createContactForm");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            const data = {
+                name: formData.get("name"),
+                email: formData.get("email"),
+                phone: formData.get("phone"),
+            };
+
+            // Get token from localStorage
+            const token = localStorage.getItem("token");
+
+            const response = await fetch("/api/contacts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token // Add the token here
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Contact created successfully: " + JSON.stringify(result));
+            } else {
+                alert("Error: " + result.message);
+            }
+        });
+    </script>
+</body>
+</html>
