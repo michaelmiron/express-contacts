@@ -6,8 +6,11 @@ const {
     updateContact,
     deleteContact
 } = require("../controllers/contactController");
+const validateToken = require("../middleware/validatTokenHandler");
 
 const router = express.Router();
+
+router.use(validateToken);
 
 router.route("/")
     .get(getContacts)

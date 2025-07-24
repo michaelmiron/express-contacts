@@ -74,7 +74,7 @@ const deleteContact = asyncHandler(async (req, res) => {
         throw new Error("User dont have premissions to delete other user contacts")
     }
     
-    await Contact.remove();
+    await Contact.deleteOne({_id:req.params.id});
     res.status(200).json(contact);
 });
 
