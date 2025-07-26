@@ -9,19 +9,82 @@
 <body>
   <div class="container">
     <h2>Welcome to the Menu</h2>
+    
+    <div class="search-section">
+      <input type="text" id="searchInput" placeholder="Search contacts by name or email..." />
+      <button id="searchBtn">Search</button>
+      <button id="clearBtn">Show All</button>
+    </div>
+
+    <div id="contactsList" class="contacts-list"></div>
+
     <a class="menu-link" href="create-contact.html">Create Contact</a>
     <button id="logoutBtn">Logout</button>
   </div>
   <script>
-    
     if (!localStorage.getItem("token")) {
       window.location.href = "login.html";
     }
+
+    let allContacts = [];
+
+    async function loadContacts() {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/contacts", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (response.ok) {
+        allContacts = await response.json();
+        displayContacts(allContacts);
+      }
+    }
+
+    function displayContacts(contacts) {
+      const contactsList = document.getElementById("contactsList");
+      if (contacts.length === 0) {
+        contactsList.innerHTML = "<p>No contacts found.</p>";
+        return;
+      }
+      
+      contactsList.innerHTML = contacts.map(contact => `
+        <div class="contact-item">
+          <strong>${contact.name}</strong><br>
+          Email: ${contact.email}<br>
+          Phone: ${contact.phone}
+        </div>
+      `).join("");
+    }
+
+    function filterContacts(searchTerm) {
+      const filtered = allContacts.filter(contact => 
+        contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contact.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      displayContacts(filtered);
+    }
+
+    document.getElementById("searchBtn").onclick = function() {
+      const searchTerm = document.getElementById("searchInput").value;
+      filterContacts(searchTerm);
+    };
+
+    document.getElementById("clearBtn").onclick = function() {
+      document.getElementById("searchInput").value = "";
+      displayContacts(allContacts);
+    };
+
+    document.getElementById("searchInput").addEventListener("keyup", function(e) {
+      if (e.key === "Enter") {
+        filterContacts(this.value);
+      }
+    });
 
     document.getElementById("logoutBtn").onclick = function() {
       localStorage.removeItem("token");
       window.location.href = "login.html";
     };
+
+    loadContacts();
   </script>
 </body>
 </html>
